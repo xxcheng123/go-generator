@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"github.com/gin-gonic/gin"
 	"go-generator/dao/mysql"
 	"go-generator/dao/redis"
 	"go-generator/logger"
@@ -43,6 +44,10 @@ func main() {
 	defer redis.Close()
 	//注册路由
 	r := routers.Setup(settings.Config)
+	//测试版本号查看
+	r.GET("/version", func(ctx *gin.Context) {
+		ctx.String(200, fmt.Sprintf("current Version:%s", settings.Config.Version))
+	})
 	//优雅关机
 
 	srv := &http.Server{
