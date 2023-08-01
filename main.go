@@ -14,8 +14,6 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/spf13/viper"
-
 	"go.uber.org/zap"
 )
 
@@ -26,27 +24,29 @@ func main() {
 		return
 	}
 	//初始化日志
-	if err := logger.Init(); err != nil {
+	if err := logger.Init(settings.Config.LogConfig); err != nil {
 		fmt.Printf("init logger failed, err:%#v\n", err)
 		return
 	}
 	defer zap.L().Sync()
 	zap.L().Debug("logger init success...")
 	//连接数据库
-	if err := mysql.Init(); err != nil {
+	if err := mysql.Init(settings.Config.MySQLConfig); err != nil {
 		fmt.Printf("init mysql failed, err:%#v\n", err)
 		return
 	}
-	if err := redis.Init(); err != nil {
+	defer mysql.Close()
+	if err := redis.Init(settings.Config.RedisConfig); err != nil {
 		fmt.Printf("init redis failed, err:%#v\n", err)
 		return
 	}
+	defer redis.Close()
 	//注册路由
-	r := routers.Setup()
+	r := routers.Setup(settings.Config)
 	//优雅关机
 
 	srv := &http.Server{
-		Addr:    fmt.Sprintf(":%d", viper.GetInt("app.port")),
+		Addr:    fmt.Sprintf(":%d", settings.Config.Port),
 		Handler: r,
 	}
 

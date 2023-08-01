@@ -1,8 +1,8 @@
-app:
-  name: "go-generator"
-  version:  "1.0.0"
-  author: "xxcheng"
-  port: 19999
+name: "go-generator"
+version:  "1.0.1"
+author: "xxcheng"
+port: 19999
+mode: "debug"
 log:
   filename: "log.log"
   max_size: 30

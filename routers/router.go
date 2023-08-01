@@ -2,11 +2,13 @@ package routers
 
 import (
 	"go-generator/logger"
+	"go-generator/settings"
 
 	"github.com/gin-gonic/gin"
 )
 
-func Setup() *gin.Engine {
+func Setup(cfg *settings.AppConfig) *gin.Engine {
+	gin.SetMode(cfg.Mode)
 	r := gin.New()
 	r.Use(logger.GinLogger(), logger.GinRecover())
 	r.NoRoute(func(ctx *gin.Context) {

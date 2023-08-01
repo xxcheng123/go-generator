@@ -1,11 +1,11 @@
 package logger
 
 import (
+	"go-generator/settings"
 	"time"
 
 	ginzap "github.com/gin-contrib/zap"
 	"github.com/gin-gonic/gin"
-	"github.com/spf13/viper"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 	"gopkg.in/natefinch/lumberjack.v2"
@@ -42,15 +42,16 @@ func getLogWriteSyncer(filename string, maxSize int, maxAge int, maxBackups int)
 	return zapcore.AddSync(lumberJackLogger)
 }
 
-func Init() (err error) {
+func Init(cfg *settings.LogConfig) (err error) {
 	encoder := getLogEncoder()
 	writeSyncer := getLogWriteSyncer(
-		viper.GetString("log.filename"),
-		viper.GetInt("log.max_size"),
-		viper.GetInt("log.max_age"),
-		viper.GetInt("log.max_backups"))
+		cfg.Filename,
+		cfg.MaxSize,
+		cfg.MaxAge,
+		cfg.MaxBuckups,
+	)
 	level := new(zapcore.Level)
-	err = level.UnmarshalText([]byte(viper.GetString("log.level")))
+	err = level.UnmarshalText([]byte(cfg.Level))
 	if err != nil {
 		return err
 	}

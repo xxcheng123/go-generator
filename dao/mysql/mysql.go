@@ -1,5 +1,11 @@
 package mysql
 
-func Init() (err error) {
+import "go-generator/settings"
+
+func Init(cfg *settings.MySQLConfig) (err error) {
 	return err
+}
+
+func Close() {
+
 }
