@@ -9,11 +9,29 @@ import (
 
 var Config = new(AppConfig)
 
-func Init() (err error) {
-	viper.SetConfigFile("config.yaml")
+type ViperConfig struct {
+	ConfigFile string
+	ConfigName string
+	ConfigType string
+	ConfigPath string
+}
+
+func Init(viperConfig *ViperConfig) (err error) {
+	//viper.SetConfigFile("config.yaml")
 	//viper.SetConfigName("config")
 	//viper.SetConfigType("yaml")
-	viper.AddConfigPath(".")
+	//viper.AddConfigPath(".")
+	//如果配置了 `SetConfigFile`，`viper` 不会检查任何路径
+	if viperConfig.ConfigFile != "" {
+		viper.SetConfigFile(viperConfig.ConfigFile)
+	} else {
+		viper.AddConfigPath(viperConfig.ConfigPath)
+		viper.AddConfigPath(viperConfig.ConfigName)
+		if viperConfig.ConfigType != "" {
+			viper.AddConfigPath(viperConfig.ConfigType)
+		}
+	}
+
 	err = viper.ReadInConfig()
 	if err != nil {
 		//panic(err)

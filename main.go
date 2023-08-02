@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"flag"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"go-generator/dao/mysql"
@@ -18,9 +19,30 @@ import (
 	"go.uber.org/zap"
 )
 
+var configFile string
+var configPath string
+var configName string
+var configType string
+
+func init() {
+	flag.StringVar(&configFile, "f", "", "配置文件全路径，如果配置了当前路径，会忽略其他参数")
+	flag.StringVar(&configPath, "p", ".", "配置文件路径")
+	flag.StringVar(&configName, "n", "config", "配置文件名字")
+	flag.StringVar(&configType, "t", "", "配置文件格式")
+}
+
 func main() {
+	flag.Parse()
+	//configPath, _ = filepath.Abs(configPath)
+	//fmt.Printf("Config Name:%s,Path:%s\n", configFile, configPath)
+	viperConfig := settings.ViperConfig{
+		ConfigFile: configFile,
+		ConfigPath: configPath,
+		ConfigName: configName,
+		ConfigType: configType,
+	}
 	//加载配置
-	if err := settings.Init(); err != nil {
+	if err := settings.Init(&viperConfig); err != nil {
 		fmt.Printf("init settings failed, err:%#v\n", err)
 		return
 	}
