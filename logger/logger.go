@@ -2,6 +2,7 @@ package logger
 
 import (
 	"go-generator/settings"
+	"os"
 	"time"
 
 	ginzap "github.com/gin-contrib/zap"
@@ -42,7 +43,7 @@ func getLogWriteSyncer(filename string, maxSize int, maxAge int, maxBackups int)
 	return zapcore.AddSync(lumberJackLogger)
 }
 
-func Init(cfg *settings.LogConfig) (err error) {
+func Init(cfg *settings.LogConfig, mode string) (err error) {
 	encoder := getLogEncoder()
 	writeSyncer := getLogWriteSyncer(
 		cfg.Filename,
@@ -55,7 +56,15 @@ func Init(cfg *settings.LogConfig) (err error) {
 	if err != nil {
 		return err
 	}
-	zapCore := zapcore.NewCore(encoder, writeSyncer, level)
+	var zapCore zapcore.Core
+	if mode == "debug" {
+		consoleEncoder := zapcore.NewConsoleEncoder(zap.NewDevelopmentEncoderConfig())
+		zapCore = zapcore.NewTee(
+			zapcore.NewCore(encoder, writeSyncer, level),
+			zapcore.NewCore(consoleEncoder, zapcore.Lock(os.Stdout), zapcore.DebugLevel))
+	} else {
+		zapCore = zapcore.NewCore(encoder, writeSyncer, level)
+	}
 	logger := zap.New(zapCore, zap.AddCaller())
 	zap.ReplaceGlobals(logger)
 	return err
