@@ -6,6 +6,8 @@ type AppConfig struct {
 	Author       string `mapstructure:"author"`
 	Port         uint16 `mapstructure:"port"`
 	Mode         string `mapstructure:"mode"`
+	StartTime    string `mapstructure:"start_time"`
+	NodeID       int64  `mapstructure:"nodeID"`
 	*LogConfig   `mapstructure:"log"`
 	*MySQLConfig `mapstructure:"mysql"`
 	*RedisConfig `mapstructure:"redis"`
@@ -23,6 +25,8 @@ type MySQLConfig struct {
 	User         string `mapstructure:"user"`
 	Pass         string `mapstructure:"pass"`
 	DatabaseName string `mapstructure:"dbName"`
+	MaxOpenConns int    `mapstructure:"maxOpenConns"`
+	MaxIdleConns int    `mapstructure:"maxIdleConns"`
 }
 type RedisConfig struct {
 	Host string `mapstructure:"host"`
